@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import Leaderboard from '../components/Leaderboard.jsx';
 import PerformanceTrends from '../components/PerformanceTrends.jsx';
 import StudentTrendModal from '../components/StudentTrendModal.jsx';
+import StudentsList from '../components/StudentsList.jsx';
+import ResultsList from '../components/ResultsList.jsx';
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('leaderboard');
@@ -9,11 +11,33 @@ export default function Dashboard() {
   const [modalOpen, setModalOpen] = useState(false);
   const [currentFilters, setCurrentFilters] = useState({ subject: '', test: '' });
 
+  const tabs = [
+    { key: 'leaderboard', label: 'Leaderboard' },
+    { key: 'trends', label: 'Performance Trends' },
+    { key: 'students', label: 'Manage Students' },
+    { key: 'results', label: 'Manage Results' }
+  ];
+
   return (
     <div>
-      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-        <button onClick={() => setActiveTab('leaderboard')} style={{ padding: '8px 12px', background: activeTab==='leaderboard'?'#111827':'#E5E7EB', color: activeTab==='leaderboard'?'#fff':'#111827', borderRadius: 6 }}>Leaderboard</button>
-        <button onClick={() => setActiveTab('trends')} style={{ padding: '8px 12px', background: activeTab==='trends'?'#111827':'#E5E7EB', color: activeTab==='trends'?'#fff':'#111827', borderRadius: 6 }}>Performance Trends</button>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
+        {tabs.map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            style={{
+              padding: '8px 16px',
+              background: activeTab === tab.key ? '#111827' : '#E5E7EB',
+              color: activeTab === tab.key ? '#fff' : '#111827',
+              border: 'none',
+              borderRadius: 6,
+              cursor: 'pointer',
+              fontWeight: activeTab === tab.key ? 600 : 400
+            }}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
       {activeTab === 'leaderboard' && (
@@ -25,9 +49,14 @@ export default function Dashboard() {
           onFiltersChange={setCurrentFilters}
         />
       )}
+
       {activeTab === 'trends' && (
         <PerformanceTrends initialStudent={selectedStudent} initialSubject={currentFilters.subject} />
       )}
+
+      {activeTab === 'students' && <StudentsList />}
+
+      {activeTab === 'results' && <ResultsList />}
 
       <StudentTrendModal
         open={modalOpen}

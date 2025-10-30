@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import Student from '../models/student.js';
+import { clearCache } from '../utils/cache.js';
 
 const router = Router();
 
@@ -84,6 +85,12 @@ router.put('/:id', async (req, res, next) => {
       doc = await Student.findOneAndUpdate({ studentId: id }, update, opts);
     }
     if (!doc) return res.status(404).json({ error: 'Student not found' });
+    
+    // Clear leaderboard cache if student name changed (affects leaderboard display)
+    if (update.name) {
+      clearCache('leaderboard:');
+    }
+    
     res.json(doc);
   } catch (err) {
     next(err);
@@ -92,6 +99,9 @@ router.put('/:id', async (req, res, next) => {
 
 /**
  * DELETE /api/students/:id
+ * Note: This only deletes the student record, NOT their results.
+ * Results remain in the database and will still show in leaderboards.
+ * To fully remove a student, delete their results first.
  */
 router.delete('/:id', async (req, res, next) => {
   try {
@@ -106,6 +116,12 @@ router.delete('/:id', async (req, res, next) => {
       result = r;
     }
     if (result.deletedCount === 0) return res.status(404).json({ error: 'Student not found' });
+    
+    // Clear leaderboard cache since student data changed
+    clearCache('leaderboard:');
+    
+    // Note: Results for this student still exist
+    // Leaderboard will show the student's name from Result records
     res.json({ ok: true });
   } catch (err) {
     next(err);
