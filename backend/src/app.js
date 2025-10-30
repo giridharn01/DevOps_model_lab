@@ -3,6 +3,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import compression from 'compression';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 import leaderboardRouter from './routes/leaderboard.js';
 import performanceRouter from './routes/performance.js';
@@ -10,12 +12,15 @@ import studentsRouter from './routes/students.js';
 import resultsRouter from './routes/results.js';
 
 const app = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
 app.use(compression());
 app.use(morgan('dev'));
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
 
 // Root welcome route to avoid 404 on /
 app.get('/', (req, res) => {
@@ -43,6 +48,9 @@ app.use('/api/leaderboard', leaderboardRouter);
 app.use('/api/performance', performanceRouter);
 app.use('/api/students', studentsRouter);
 app.use('/api/results', resultsRouter);
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+});
 
 // Not found
 app.use((req, res) => {
