@@ -38,7 +38,7 @@ pipeline {
                 bat '''
                 cd backend
                 set PORT=3000
-                node server.js
+                node src/server.js
                 '''
             }
         }
