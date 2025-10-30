@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'NodeJS_20'  // Ensure this name matches your Jenkins NodeJS tool name
+        nodejs 'NodeJS_20'  // Must match your Jenkins NodeJS tool config name
     }
 
     stages {
@@ -36,6 +36,11 @@ pipeline {
         stage('Deploy Locally') {
             steps {
                 dir('backend') {
+                    echo 'Killing any previous Node.js server...'
+                    // Windows command: kills any running Node processes
+                    bat '''
+                    for /f "tokens=5" %%p in ('netstat -aon ^| find ":3000" ^| find "LISTENING"') do taskkill /PID %%p /F
+                    '''
                     echo 'Deploying frontend build to backend...'
                     bat 'if not exist public mkdir public'
                     bat 'xcopy /E /I /Y "..\\frontend\\dist\\*" "public\\"'
@@ -57,7 +62,7 @@ pipeline {
             echo '✅ Build & Deployment completed successfully!'
         }
         failure {
-            echo '❌ Build failed. Check logs for errors.'
+            echo '❌ Build failed. Check logs for details.'
         }
     }
 }
