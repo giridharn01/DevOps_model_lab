@@ -2,9 +2,10 @@ pipeline {
     agent any
 
     stages {
+
         stage('Checkout') {
             steps {
-                checkout scm
+                git branch: 'main', url: 'https://github.com/giridharn01/DevOps_model_lab.git'
             }
         }
 
@@ -27,17 +28,28 @@ pipeline {
 
         stage('Archive Artifacts') {
             steps {
-                archiveArtifacts artifacts: 'frontend/dist/**', fingerprint: true
+                archiveArtifacts artifacts: 'frontend/dist/**/*', fingerprint: true
+            }
+        }
+
+        stage('Deploy Locally') {
+            steps {
+                echo '🚀 Starting local deployment...'
+                bat '''
+                cd backend
+                set PORT=3000
+                node server.js
+                '''
             }
         }
     }
 
     post {
         success {
-            echo '🎉 Build and artifact archive completed successfully!'
+            echo '✅ Build, archive, and local deployment completed successfully!'
         }
         failure {
-            echo '❌ Build failed. Check logs.'
+            echo '❌ Build or deploy failed. Check the logs!'
         }
     }
 }
