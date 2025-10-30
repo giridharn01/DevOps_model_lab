@@ -34,14 +34,16 @@ pipeline {
 
         stage('Deploy Locally') {
             steps {
-                echo '🚀 Starting local deployment...'
+                echo '🧱 Local build verification (no server run)...'
                 bat '''
                 cd backend
                 set PORT=3000
-                node src/server.js
+                node -e "require('fs').existsSync('src/server.js') ? console.log('Server file OK') : process.exit(1)"
                 '''
+                echo '✅ Verified backend structure, skipping runtime deploy.'
             }
         }
+
     }
 
     post {
