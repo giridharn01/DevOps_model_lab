@@ -20,26 +20,7 @@ export default function Leaderboard({ onSelectStudent, onFiltersChange }) {
   }, [subject, test]);
 
   useEffect(() => {
-    async function load() {
-      if (!canQuery) return;
-      setLoading(true);
-      setError(null);
-      try {
-        const data = await fetchLeaderboard({ subject, test, page: page + 1, limit: pageSize });
-        setRowCount(data.count || 0);
-        setRows(
-          (data.data || []).map((d, idx) => ({ id: d.studentId, ...d }))
-        );
-      } catch (err) {
-        console.error('Failed to load leaderboard:', err);
-        setError(err.response?.data?.error || err.message || 'Failed to load data');
-        setRows([]);
-        setRowCount(0);
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
+    loadLeaderboard();
   }, [subject, test, page, pageSize]);
 
   const columns = useMemo(() => [
@@ -66,11 +47,40 @@ export default function Leaderboard({ onSelectStudent, onFiltersChange }) {
     }},
   ], []);
 
+  const handleRefresh = () => {
+    setPage(0);
+    // Force reload by resetting page, which triggers useEffect
+    loadLeaderboard();
+  };
+
+  const loadLeaderboard = async () => {
+    if (!canQuery) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await fetchLeaderboard({ subject, test, page: page + 1, limit: pageSize });
+      setRowCount(data.count || 0);
+      setRows(
+        (data.data || []).map((d, idx) => ({ id: d.studentId, ...d }))
+      );
+    } catch (err) {
+      console.error('Failed to load leaderboard:', err);
+      setError(err.response?.data?.error || err.message || 'Failed to load data');
+      setRows([]);
+      setRowCount(0);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div>
-      <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 12, alignItems: 'center' }}>
         <input placeholder="Subject (e.g., Math)" value={subject} onChange={(e) => setSubject(e.target.value)} style={{ padding: '6px 10px' }} />
         <input placeholder="Test (e.g., Midterm-1)" value={test} onChange={(e) => setTest(e.target.value)} style={{ padding: '6px 10px' }} />
+        <button onClick={handleRefresh} disabled={!canQuery || loading} style={{ padding: '6px 12px', background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 6, cursor: 'pointer', fontSize: 13, fontWeight: 500 }}>
+          🔄 Refresh
+        </button>
         <ExportButtons data={rows} />
       </div>
       {error && (
