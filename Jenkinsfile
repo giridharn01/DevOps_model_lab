@@ -1,5 +1,6 @@
 pipeline {
     agent any
+    tools { nodejs "NodeJS_20" }
 
     stages {
         stage('Checkout') {
@@ -11,7 +12,6 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the project...'
-                // For Node/React projects
                 bat 'npm install'
                 bat 'npm run build'
             }
@@ -27,7 +27,7 @@ pipeline {
 
     post {
         success {
-            echo '✅ Build completed successfully and artifacts archived!'
+            echo '✅ Build completed successfully!'
         }
         failure {
             echo '❌ Build failed.'
