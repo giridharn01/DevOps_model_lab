@@ -17,12 +17,14 @@ pipeline {
             steps {
                 dir('frontend') {
                     bat '''
-                    call npm install
-                    call npx vite build
+                    call npm ci
+                    call npm install vite@latest --save-dev
+                    call npx vite build --debug
                     '''
                 }
             }
         }
+
 
 
 
