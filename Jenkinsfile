@@ -55,6 +55,14 @@ pipeline {
                 archiveArtifacts artifacts: '**/dist/**', fingerprint: true
             }
         }
+        stage('Archive Artifacts') {
+            steps {
+                archiveArtifacts artifacts: 'frontend/dist/**', fingerprint: true
+            }
+        }
+
+
+        
     }
 
     post {
