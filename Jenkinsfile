@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        NODE_ENV = 'production'
+    }
+
     stages {
 
         stage('Checkout') {
@@ -22,36 +26,37 @@ pipeline {
             steps {
                 dir('backend') {
                     bat 'npm install'
+                    echo '✅ Backend dependencies installed successfully.'
                 }
             }
         }
 
         stage('Archive Artifacts') {
             steps {
-                archiveArtifacts artifacts: 'frontend/dist/**/*', fingerprint: true
+                echo '📦 Archiving frontend and backend build outputs...'
+                archiveArtifacts artifacts: 'frontend/dist/**, backend/**', fingerprint: true
+                echo '✅ Artifacts archived successfully.'
             }
         }
 
-        stage('Deploy Locally') {
+        stage('Verification') {
             steps {
-                echo '🧱 Local build verification (no server run)...'
+                echo '🧱 Verifying backend structure...'
                 bat '''
                 cd backend
-                set PORT=3000
-                node -e "require('fs').existsSync('src/server.js') ? console.log('Server file OK') : process.exit(1)"
+                node -e "require('fs').existsSync('src/server.js') ? console.log('✅ server.js found') : process.exit(1)"
                 '''
-                echo '✅ Verified backend structure, skipping runtime deploy.'
+                echo '🏁 Build pipeline completed successfully.'
             }
         }
-
     }
 
     post {
         success {
-            echo '✅ Build, archive, and local deployment completed successfully!'
+            echo '🎉 Build completed successfully and artifacts stored.'
         }
         failure {
-            echo '❌ Build or deploy failed. Check the logs!'
+            echo '❌ Build failed! Check logs for details.'
         }
     }
 }
