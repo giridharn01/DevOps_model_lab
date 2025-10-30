@@ -2,25 +2,35 @@ pipeline {
     agent any
 
     stages {
-        stage('Clone') {
+        stage('Checkout') {
             steps {
                 checkout scm
             }
         }
+
         stage('Build') {
             steps {
                 echo 'Building the project...'
+                // For Node/React projects
+                bat 'npm install'
+                bat 'npm run build'
             }
         }
-        stage('Test') {
+
+        stage('Archive Artifacts') {
             steps {
-                echo 'Running tests...'
+                echo 'Archiving build artifacts...'
+                archiveArtifacts artifacts: 'build/**', fingerprint: true
             }
         }
-        stage('Deploy') {
-            steps {
-                echo 'Deploying application...'
-            }
+    }
+
+    post {
+        success {
+            echo '✅ Build completed successfully and artifacts archived!'
+        }
+        failure {
+            echo '❌ Build failed.'
         }
     }
 }
