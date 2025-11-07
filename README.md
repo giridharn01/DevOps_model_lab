@@ -120,4 +120,4 @@ Open http://localhost:5173
 - For PDF export, integrate jsPDF or server-side PDF with Puppeteer.
 - Tailwind: you can swap MUI table for Tailwind if preferred; this scaffold uses MUI for speed and accessibility.
   
--New jenkins pipeline
+-New jenkins pipeline.
