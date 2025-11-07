@@ -1,4 +1,4 @@
-# Model Lab — Leaderboard and Performance Trends
+# Model Lab — Leaderboard and Performance Trends.
 
 This adds two advanced end-user features to a React + Node/Express + MongoDB stack:
 
