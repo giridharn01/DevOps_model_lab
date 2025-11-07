@@ -1,12 +1,7 @@
 pipeline {
     agent any
 
-    environment {
-        NODE_ENV = 'production'
-    }
-
     stages {
-
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/giridharn01/DevOps_model_lab.git'
@@ -14,51 +9,37 @@ pipeline {
         }
 
         stage('Build Frontend') {
-            dir('frontend') {
-                bat '''
-                call npm install
-                call npm run build
-                '''
+            steps {
+                dir('frontend') {
+                    bat '''
+                    call npm install
+                    call npm run build
+                    '''
+                }
             }
         }
-
-
-
-
-
 
         stage('Build Backend') {
             steps {
                 dir('backend') {
-                    bat 'npm install'
-                    echo '✅ Backend dependencies installed successfully.'
+                    bat '''
+                    call npm install
+                    call npm run build
+                    '''
                 }
             }
         }
 
         stage('Archive Artifacts') {
             steps {
-                echo '📦 Archiving frontend and backend build outputs...'
-                archiveArtifacts artifacts: 'frontend/dist/**, backend/**', fingerprint: true
-                echo '✅ Artifacts archived successfully.'
-            }
-        }
-
-        stage('Verification') {
-            steps {
-                echo '🧱 Verifying backend structure...'
-                bat '''
-                cd backend
-                node -e "require('fs').existsSync('src/server.js') ? console.log('✅ server.js found') : process.exit(1)"
-                '''
-                echo '🏁 Build pipeline completed successfully.'
+                archiveArtifacts artifacts: '**/dist/**', fingerprint: true
             }
         }
     }
 
     post {
         success {
-            echo '🎉 Build completed successfully and artifacts stored.'
+            echo '✅ Build completed successfully!'
         }
         failure {
             echo '❌ Build failed! Check logs for details.'
