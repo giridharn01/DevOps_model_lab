@@ -14,16 +14,14 @@ pipeline {
         }
 
         stage('Build Frontend') {
-            steps {
-                dir('frontend') {
-                    bat '''
-                    call npm ci
-                    call npm install vite@latest --save-dev
-                    call npx vite build --debug
-                    '''
-                }
+            dir('frontend') {
+                bat '''
+                call npm install
+                call npm run build
+                '''
             }
         }
+
 
 
 
