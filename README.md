@@ -112,10 +112,11 @@ npm run dev
 
 Open http://localhost:5173
 
-## Production & Extras
+## Production & Extras:
 
 - Add proper JWT auth in middleware and secure routes if needed.
 - Replace in-memory cache with Redis for scale.
 - Consider precomputing RankHistory after each test import to avoid cold path on first leaderboard load.
 - For PDF export, integrate jsPDF or server-side PDF with Puppeteer.
 - Tailwind: you can swap MUI table for Tailwind if preferred; this scaffold uses MUI for speed and accessibility.
+  
